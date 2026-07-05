@@ -24,3 +24,11 @@ exports.updateTaskStatus = async (id, status) => {
 exports.deleteTask = async (id) => {
     return await todoRepository.deleteTask(id);
 }
+
+exports.getAllTask = async (search, status) => {
+    return await todoRepository.getAllTask(search, status);
+}
+
+exports.getTaskById = async (id) => {
+    return await todoRepository.getTaskById(id);
+}

@@ -23,3 +23,31 @@ exports.deleteTask = async (id) => {
     const result = await pool.query(query, [id]);
     return result.rows[0];
 }
+
+exports.getAllTask = async (search, status) => {
+    let query = `SELECT * FROM tasks WHERE 1=1`
+    let values = [];
+    let count = 1;
+
+    if (search){
+        query += ` AND title ILIKE $${count}`
+        values.push(`%${search}%`);
+        count++;
+    }
+
+    if (status){
+        query += ` AND status = $${count}`
+        values.push(status);
+        count++;
+    }
+
+    query += ` ORDER BY created_at DESC`;
+    const result = await pool.query(query, values);
+    return result.rows;
+}
+
+exports.getTaskById = async (id) => {
+    const query = `SELECT * FROM tasks WHERE id = $1`;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+}
