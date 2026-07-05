@@ -34,7 +34,7 @@ exports.getAllTask = async (search, status, page, limit) => {
         tasks: tasks,
         pagination: {
             total_items: parseInt(totalCount),
-            total_page: Math.ceil(totalCount / limit),
+            total_pages: Math.ceil(totalCount / limit),
             current_page: page,
             limit: limit,
             has_next: page < Math.ceil(totalCount / limit),
