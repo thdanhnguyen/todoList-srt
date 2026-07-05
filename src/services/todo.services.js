@@ -20,3 +20,7 @@ exports.updateTaskStatus = async (id, status) => {
     }
     return await todoRepository.updateTaskStatus(id, status);
 }
+
+exports.deleteTask = async (id) => {
+    return await todoRepository.deleteTask(id);
+}

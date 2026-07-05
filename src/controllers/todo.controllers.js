@@ -46,3 +46,18 @@ exports.updateTaskStatus = async (req, res) => {
         })
     }
 }
+
+exports.deleteTask = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const task = await todoService.deleteTask(id)
+        return res.status(200).json({
+          message: "Xóa thành công",  
+        })
+    }catch(err){
+        return res.status(500).json({
+            message: "Đã xảy ra lỗi",
+            error: err.message
+        })
+    }
+}
