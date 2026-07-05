@@ -1,0 +1,32 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=db
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=todolist123
+      - DATABASE_NAME=todo_db
+      - PORT=3000
+
+  db:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: todolist123
+      POSTGRES_DB: todo_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/config/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
