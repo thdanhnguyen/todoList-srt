@@ -17,3 +17,9 @@ exports.updateTaskStatus = async (id, status) => {
     const result = await pool.query(query, [status, id]);
     return result.rows[0];
 }
+
+exports.deleteTask = async (id) => {
+    const query = `DELETE FROM tasks WHERE id = $1 RETURNING *`;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+}
