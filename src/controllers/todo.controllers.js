@@ -65,10 +65,13 @@ exports.deleteTask = async (req, res) => {
 exports.getAllTask = async (req, res) => {
     try{
         const {search, status} = req.query;
-        const task = await todoService.getAllTask(search, status)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const result = await todoService.getAllTask(search, status, page, limit)
         return res.status(200).json({
             message: "Lấy danh sách thành công",
-            data:task
+            data:result.tasks,
+            pagination:result.pagination
         })
     }catch(err){
         return res.status(500).json({
@@ -98,4 +101,5 @@ exports.getTaskById = async (req, res) => {
         })
     }
 }
+
 

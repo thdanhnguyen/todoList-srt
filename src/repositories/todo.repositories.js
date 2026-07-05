@@ -24,7 +24,7 @@ exports.deleteTask = async (id) => {
     return result.rows[0];
 }
 
-exports.getAllTask = async (search, status) => {
+exports.getAllTask = async (search, status, limit, offset) => {
     let query = `SELECT * FROM tasks WHERE 1=1`
     let values = [];
     let count = 1;
@@ -40,8 +40,21 @@ exports.getAllTask = async (search, status) => {
         values.push(status);
         count++;
     }
-
     query += ` ORDER BY created_at DESC`;
+
+    if (limit){
+        query += ` LIMIT $${count}`
+        values.push(limit);
+        count++;
+    }
+
+    if (offset !== undefined){
+        query += ` OFFSET $${count}`
+        values.push(offset);
+        count++;
+    }
+
+    
     const result = await pool.query(query, values);
     return result.rows;
 }
@@ -50,4 +63,25 @@ exports.getTaskById = async (id) => {
     const query = `SELECT * FROM tasks WHERE id = $1`;
     const result = await pool.query(query, [id]);
     return result.rows[0];
+}
+
+exports.countAllTask = async (search, status) => {
+    let query = `SELECT COUNT(*) FROM tasks WHERE 1=1`
+    let values = [];
+    let count = 1;
+
+    if (search){
+        query += ` AND title ILIKE $${count}`
+        values.push(`%${search}%`);
+        count++;
+    }
+
+    if (status){
+        query += ` AND status = $${count}`
+        values.push(status);
+        count++;
+    }
+
+    const result = await pool.query(query, values);
+    return result.rows[0].count;
 }
