@@ -25,10 +25,28 @@ exports.deleteTask = async (id) => {
     return await todoRepository.deleteTask(id);
 }
 
-exports.getAllTask = async (search, status) => {
-    return await todoRepository.getAllTask(search, status);
+exports.getAllTask = async (search, status, page, limit) => {
+    const offset = (page - 1) * limit;
+    const tasks = await todoRepository.getAllTask(search, status, limit, offset);
+    const totalCount = await todoRepository.countAllTask(search, status);
+    
+    return {
+        tasks: tasks,
+        pagination: {
+            total_items: parseInt(totalCount),
+            total_page: Math.ceil(totalCount / limit),
+            current_page: page,
+            limit: limit,
+            has_next: page < Math.ceil(totalCount / limit),
+            has_prev: page > 1,
+        }
+    }
 }
 
 exports.getTaskById = async (id) => {
     return await todoRepository.getTaskById(id);
+}
+
+exports.countAllTask = async (search, status) => {
+    return await todoRepository.countAllTask(search, status);
 }
