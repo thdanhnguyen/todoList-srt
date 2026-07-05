@@ -14,3 +14,35 @@ exports.createTask = async (req, res) => {
         })
     }
 }
+
+exports.updateTask = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const {title, description, status} = req.body;
+        const task = await todoService.updateTask(id, title, description, status)
+        return res.status(200).json({
+          task:task,  
+        })
+    }catch(err){
+        return res.status(500).json({
+            message: "Đã xảy ra lỗi",
+            error: err.message
+        })
+    }
+}
+
+exports.updateTaskStatus = async (req, res) => {
+    try{
+        const {id} = req.params;
+        const {status} = req.body;
+        const task = await todoService.updateTaskStatus(id, status)
+        return res.status(200).json({
+          task:task,  
+        })
+    }catch(err){
+        return res.status(500).json({
+            message: "Đã xảy ra lỗi",
+            error: err.message
+        })
+    }
+}
