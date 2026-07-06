@@ -9,6 +9,7 @@ let state = {
     currentStatus: '',
     searchTimer: null,
     deleteTargetId: null,
+    isFirstLoad: true,
 };
 
 const DOM = {
@@ -63,7 +64,11 @@ async function apiRequest(endpoint, options = {}) {
 }
 
 async function fetchTasks() {
-    showSkeleton(true);
+    showSkeleton(state.isFirstLoad);
+    if (!state.isFirstLoad) {
+        DOM.taskList.style.opacity = '0.5';
+        DOM.taskList.style.pointerEvents = 'none';
+    }
     try {
         const params = new URLSearchParams({
             page: state.currentPage,
@@ -87,11 +92,14 @@ async function fetchTasks() {
         renderTaskList();
         renderPagination();
         updateStats();
+        state.isFirstLoad = false;
     } catch (err) {
         showToast('Không thể tải danh sách công việc!', 'error');
         console.error(err);
     } finally {
         showSkeleton(false);
+        DOM.taskList.style.opacity = '1';
+        DOM.taskList.style.pointerEvents = 'auto';
     }
 }
 
