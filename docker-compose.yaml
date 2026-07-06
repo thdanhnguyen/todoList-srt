@@ -10,16 +10,17 @@ services:
     depends_on:
       - db
     environment:
-      - DATABASE_URL=db
+      - DATABASE_HOST=db
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=todolist123
       - DATABASE_NAME=todo_db
+      - DATABASE_PORT=5432
       - PORT=3000
 
   db:
     image: postgres:14
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: todolist123

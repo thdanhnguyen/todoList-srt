@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoList - Quản Lý Công Việc</title>
+    <meta name="description" content="Ứng dụng quản lý công việc thông minh, giúp bạn theo dõi và hoàn thành mọi nhiệm vụ.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">✦</span>
+                    <h1 class="logo-text">TodoList</h1>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-total">0</span>
+                        <span class="stat-label">Tổng số</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-pending">0</span>
+                        <span class="stat-label">Đang làm</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="stat-completed">0</span>
+                        <span class="stat-label">Hoàn thành</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Toolbar: Search + Filter + Add -->
+            <div class="toolbar">
+                <div class="search-wrapper">
+                    <span class="search-icon">⌕</span>
+                    <input 
+                        id="search-input" 
+                        type="text" 
+                        class="search-input" 
+                        placeholder="Tìm kiếm công việc..."
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="filter-wrapper">
+                    <button id="filter-all" class="filter-btn active" data-status="">Tất cả</button>
+                    <button id="filter-pending" class="filter-btn" data-status="pending">Đang làm</button>
+                    <button id="filter-completed" class="filter-btn" data-status="completed">Hoàn thành</button>
+                </div>
+                <button id="btn-add-task" class="btn btn-primary">
+                    <span class="btn-icon">+</span>
+                    Thêm công việc
+                </button>
+            </div>
+
+            <!-- Task List -->
+            <div id="task-list-container" class="task-list-container">
+                <!-- Loading Skeleton -->
+                <div id="loading-skeleton" class="skeleton-container">
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state hidden">
+                    <div class="empty-icon">📋</div>
+                    <h3 class="empty-title">Chưa có công việc nào</h3>
+                    <p class="empty-desc">Hãy nhấn "Thêm công việc" để bắt đầu!</p>
+                </div>
+
+                <!-- Task List -->
+                <ul id="task-list" class="task-list"></ul>
+            </div>
+
+            <!-- Pagination -->
+            <div id="pagination-container" class="pagination-container hidden">
+                <button id="btn-prev" class="pagination-btn" disabled>← Trước</button>
+                <div id="page-numbers" class="page-numbers"></div>
+                <button id="btn-next" class="pagination-btn">Sau →</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal: Add/Edit Task -->
+    <div id="task-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modal-title" class="modal-title">Thêm công việc mới</h2>
+                <button id="btn-close-modal" class="btn-close">✕</button>
+            </div>
+            <form id="task-form" class="modal-form">
+                <input type="hidden" id="task-id">
+                <div class="form-group">
+                    <label for="task-title" class="form-label">Tiêu đề <span class="required">*</span></label>
+                    <input 
+                        id="task-title" 
+                        type="text" 
+                        class="form-input" 
+                        placeholder="VD: Học Docker, Làm báo cáo..."
+                        autocomplete="off"
+                    >
+                    <span id="title-error" class="form-error hidden">Tiêu đề không được để trống!</span>
+                </div>
+                <div class="form-group">
+                    <label for="task-description" class="form-label">Mô tả</label>
+                    <textarea 
+                        id="task-description" 
+                        class="form-textarea" 
+                        rows="4"
+                        placeholder="Thêm mô tả chi tiết cho công việc này..."
+                    ></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-status" class="form-label">Trạng thái</label>
+                    <select id="task-status" class="form-select">
+                        <option value="pending">🔵 Đang làm</option>
+                        <option value="completed">✅ Hoàn thành</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancel" class="btn btn-secondary">Hủy bỏ</button>
+                    <button type="submit" id="btn-submit" class="btn btn-primary">Lưu công việc</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="delete-modal" class="modal-overlay hidden">
+        <div class="modal modal-sm">
+            <div class="modal-header">
+                <h2 class="modal-title">Xác nhận xóa</h2>
+            </div>
+            <p class="delete-confirm-text">Bạn có chắc chắn muốn xóa công việc này không? Hành động này không thể hoàn tác.</p>
+            <div class="modal-actions">
+                <button id="btn-cancel-delete" class="btn btn-secondary">Giữ lại</button>
+                <button id="btn-confirm-delete" class="btn btn-danger">Xóa ngay</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
