@@ -1,115 +1,88 @@
-# ✦ TodoList — Ứng dụng Quản Lý Công Việc
+# TodoList
 
-Ứng dụng **Fullstack Todo List** với giao diện web hiện đại (Dark Mode) và REST API mạnh mẽ. Được xây dựng theo kiến trúc **Controller → Service → Repository**, đóng gói hoàn toàn bằng **Docker**.
+Ứng dụng quản lý công việc Fullstack, xây dựng theo kiến trúc Controller - Service - Repository, đóng gói bằng Docker.
 
----
+## Tính năng
 
-## 🚀 Tính năng
+- Thêm, sửa, xóa công việc
+- Đánh dấu hoàn thành / chưa hoàn thành
+- Tìm kiếm theo tên (không phân biệt hoa thường)
+- Lọc theo trạng thái: Tất cả / Đang làm / Hoàn thành
+- Phân trang và sắp xếp theo thời gian tạo
+- Validate dữ liệu đầu vào qua Middleware
+- Giao diện Responsive (Desktop & Mobile)
 
-- **Thêm / Sửa / Xóa** công việc
-- **Đánh dấu hoàn thành / chưa hoàn thành** (toggle trực tiếp trên giao diện)
-- **Tìm kiếm** theo tên công việc (Debounce, không phân biệt hoa thường)
-- **Lọc** theo trạng thái: Tất cả / Đang làm / Hoàn thành
-- **Phân trang & Sắp xếp** (mới nhất lên đầu, tự động điều hướng trang)
-- **Validate dữ liệu đầu vào** (Middleware kiểm tra tiêu đề, trạng thái)
-- **Giao diện Responsive**
-- **Docker** — Khởi chạy toàn bộ ứng dụng bằng 1 lệnh
+## Công nghệ
 
----
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL 14, thư viện `pg` (Raw SQL)
+- **Frontend:** HTML, CSS, JavaScript (Vanilla)
+- **Container:** Docker, Docker Compose
 
-## 🛠 Công nghệ sử dụng
-
-| Tầng | Công nghệ |
-|------|-----------|
-| **Backend** | Node.js, Express.js |
-| **Database** | PostgreSQL 14 (Raw SQL với `pg`) |
-| **Frontend** | HTML5, Vanilla CSS, Vanilla JavaScript |
-| **Container** | Docker, Docker Compose |
-
----
-
-## 📁 Cấu trúc dự án
+## Cấu trúc dự án
 
 ```
-todoList-srt/
-├── src/
-│   ├── config/
-│   │   ├── database.js       
-│   │   └── init.sql          
-│   ├── controllers/
-│   │   └── todo.controllers.js
-│   ├── services/
-│   │   └── todo.services.js
-│   ├── repositories/
-│   │   └── todo.repositories.js
-│   ├── middlewares/
-│   │   └── validateTodo.js   
-│   ├── routes/
-│   │   └── todo.routes.js
-│   ├── public/               
-│   │   ├── index.html
-│   │   ├── style.css
-│   │   └── main.js
-│   └── app.js
-├── .env
-├── Dockerfile
-├── docker-compose.yaml
-└── package.json
+src/
+├── config/
+│   ├── database.js
+│   └── init.sql
+├── controllers/
+│   └── todo.controllers.js
+├── services/
+│   └── todo.services.js
+├── repositories/
+│   └── todo.repositories.js
+├── middlewares/
+│   └── validateTodo.js
+├── routes/
+│   └── todo.routes.js
+└── public/
+    ├── index.html
+    ├── style.css
+    └── main.js
 ```
 
----
+## Cài đặt và chạy
 
-## ⚙️ Hướng dẫn cài đặt & Chạy dự án
-
-### Yêu cầu
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) đã được cài đặt và đang chạy.
-
-### Bước 1: Clone dự án
+**Yêu cầu:** Docker Desktop đang chạy.
 
 ```bash
+# 1. Clone dự án
 git clone https://github.com/thdanhnguyen/todoList-srt.git
 cd todoList-srt
-```
 
-### Bước 2: Khởi chạy bằng Docker Compose
-
-```bash
+# 2. Khởi chạy
 docker compose up -d --build
-```
 
-> Lệnh này sẽ tự động:
-> - Build image Node.js cho ứng dụng
-> - Khởi động container PostgreSQL
-> - Chạy script `init.sql` để tạo bảng và trigger tự động
-> - Khởi động server Express tại cổng **3000**
-
-### Bước 3: Truy cập ứng dụng
-
-| | URL |
-|---|---|
-| 🌐 **Giao diện Web** | http://localhost:3000 |
-
-### Dừng ứng dụng
-
-```bash
+# 3. Dừng ứng dụng
 docker compose down
 ```
 
+Sau khi khởi chạy, truy cập: `http://localhost:3000`
 
-### Lấy danh sách công việc
+> Lần đầu khởi động, Docker tự động chạy `init.sql` để tạo bảng và trigger trong PostgreSQL.
 
-```
-GET /api/todo
-```
+## API
 
-**Query Parameters (Tùy chọn):**
+Base URL: `http://localhost:3000/api/todo`
 
-| Tham số | Kiểu | Mô tả | Mặc định |
-|---------|------|--------|----------|
-| `search` | string | Tìm theo tên công việc | — |
-| `status` | string | Lọc: `pending` hoặc `completed` | — |
-| `page` | number | Trang hiện tại | `1` |
-| `limit` | number | Số lượng item mỗi trang | `5` |
+| Method | Endpoint | Mô tả |
+|--------|----------|-------|
+| GET | `/` | Lấy danh sách công việc (hỗ trợ search, filter, phân trang) |
+| GET | `/:id` | Lấy chi tiết 1 công việc |
+| POST | `/` | Thêm công việc mới |
+| PUT | `/:id` | Cập nhật công việc |
+| PUT | `/:id/status` | Cập nhật trạng thái |
+| DELETE | `/:id` | Xóa công việc |
+
+### Query parameters cho GET /
+
+| Tham số | Mô tả | Mặc định |
+|---------|-------|----------|
+| `search` | Tìm theo tên | — |
+| `status` | `pending` hoặc `completed` | — |
+| `page` | Trang hiện tại | `1` |
+| `limit` | Số item mỗi trang | `5` |
 
 **Ví dụ:**
 ```
@@ -120,7 +93,7 @@ GET /api/todo?search=docker&status=pending&page=1&limit=5
 ```json
 {
   "message": "Lấy danh sách thành công",
-  "data": [ ... ],
+  "data": [],
   "pagination": {
     "total_items": 11,
     "total_pages": 3,
@@ -132,23 +105,8 @@ GET /api/todo?search=docker&status=pending&page=1&limit=5
 }
 ```
 
----
+### Body cho POST và PUT
 
-### Xem chi tiết 1 công việc
-
-```
-GET /api/todo/:id
-```
-
----
-
-### Thêm công việc mới
-
-```
-POST /api/todo
-```
-
-**Body (JSON):**
 ```json
 {
   "title": "Học Docker",
@@ -157,42 +115,7 @@ POST /api/todo
 }
 ```
 
----
-
-### Cập nhật công việc
-
-```
-PUT /api/todo/:id
-```
-
-**Body (JSON):** Tương tự như thêm mới.
-
----
-
-### Cập nhật trạng thái
-
-```
-PUT /api/todo/:id/status
-```
-
-**Body (JSON):**
-```json
-{
-  "status": "completed"
-}
-```
-
----
-
-### Xóa công việc
-
-```
-DELETE /api/todo/:id
-```
-
----
-
-## 🗄 Schema Database
+## Database Schema
 
 ```sql
 CREATE TYPE task_status AS ENUM('pending', 'completed');
@@ -207,4 +130,4 @@ CREATE TABLE tasks (
 );
 ```
 
-> Trường `updated_at` được tự động cập nhật bởi **Database Trigger** mỗi khi có thay đổi.
+Trường `updated_at` được cập nhật tự động bằng Database Trigger.
